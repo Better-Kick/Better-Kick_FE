@@ -4,11 +4,13 @@ import People from '../assets/peopleIcon.svg';
 import Pawword from '../assets/passwordIcon.svg';
 import Check from '../assets/check.svg';
 
-import Footer from './components/footer'
+import { useNavigation } from '@react-navigation/native';
+
 
 import { useState } from 'react';
 
 export default function Login(){
+    const navigation = useNavigation();
     const [id, setId] = useState('');
     const [pw, setPw] = useState('');
     return(
