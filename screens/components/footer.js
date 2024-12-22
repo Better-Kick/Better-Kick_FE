@@ -19,7 +19,7 @@ export default function Footer(props){
                 {props.home ? <HomeRed /> : <HomeBlack/>}
                 <Text style={props.home ? styles.select : styles.nomal}>home</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.box} onPress={() => navigation.navigate('Storage')} activeOpacity={0.9}>
+            <TouchableOpacity style={styles.box} onPress={() => navigation.navigate('Storage', {id : props.id})} activeOpacity={0.9}>
                 {props.storage ? <StorageRed /> : <StorageBlack />}
                 <Text style={props.storage ? styles.select : styles.nomal}>storage</Text>
             </TouchableOpacity>

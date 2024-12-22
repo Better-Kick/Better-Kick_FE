@@ -1,11 +1,18 @@
 import { StyleSheet, Text, View, TextInput,  TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Logo from '../assets/logo.svg';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+import { IPContext } from '../contexts.js';
 
-export default function Survay(){
+export default function Survay({ route }){
+    const { userId } = route.params; // 전달된 데이터 추출
+    const navigation = useNavigation();
+    const {IP} = useContext(IPContext);
     const [age, setAge] = useState('');
     const [cause, setCause] = useState('');
+    const [way, setWay] = useState('');
+    const [MBTI, setMBTI] = useState('');
+    const [loading, setLoading] = useState(false);
     const [data, setData] = useState([
         {"name" : "운동" ,"status": false},
         {"name" : "게임","status": false},
@@ -22,7 +29,43 @@ export default function Survay(){
         {"name" : "드라마","status": false},
 
     ])
-
+    const postData = async ()=>{
+        if(loading) return ;
+        console.log(userId);
+        let string = '';
+        data.filter((item)=>{
+            if (item.status) {
+                string+=item.name + ",";
+            }
+        })
+        console.log(string);
+        try{
+            const res = await fetch(`http://${IP}/user/survay`, {
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json'
+                },
+                body:JSON.stringify({
+                    user_id:userId,
+                    method:way,
+                    age:age,
+                    cause:cause,
+                    tendency:string,
+                    MBTI:MBTI
+                })
+            })
+            console.log(res.status);
+            if(res.ok){
+                navigation.navigate('Login');
+            }
+            else{
+                console.log(res.status);
+            }
+            setLoading(false);
+        }catch(error){
+            console.log(error);
+        }
+    }
     return(
         <View style={styles.container}>
             <Logo width={50} style={styles.logo}/>
@@ -51,8 +94,8 @@ export default function Survay(){
                     <TextInput
                         style={styles.inputBox}
                         placeholder="스트레스 해소방법을 입력해주세요"
-                        onChangeText={setAge}
-                        value={age}
+                        onChangeText={setWay}
+                        value={way}
                         />
                 </View>
                 <View style={styles.box}>
@@ -60,8 +103,8 @@ export default function Survay(){
                     <TextInput
                         style={styles.inputBox}
                         placeholder="MBTI를 입력해주세요"
-                        onChangeText={setAge}
-                        value={age}
+                        onChangeText={setMBTI}
+                        value={MBTI}
                         />
                 </View>
                 <View style={styles.box}>
@@ -84,7 +127,13 @@ export default function Survay(){
                         
                     </View>
                 </View>
-                <TouchableOpacity style={styles.Btn}>
+                <TouchableOpacity style={styles.Btn} onPress={()=>{
+                    {loading ? null : 
+                        postData();
+                        setLoading(!loading);
+                    }
+        
+                    }}>
                     <Text style={styles.TextBtn}>회원가입</Text>
                 </TouchableOpacity>
             </View>

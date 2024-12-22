@@ -9,18 +9,31 @@ import Result from './screens/result';
 import Mypage from './screens/mypage';
 import Main from './screens/main';
 import Storage from './screens/storage';
+import Detail from './screens/detail';
+import { UserContext, IPContext } from './contexts';
+
+import { useState } from 'react';
 
 const Stack = createStackNavigator();
 
 export default function App(){
+  const [userId, settingId] = useState(null)
+  const [IP, settingIP] = useState("172.16.21.136:8080");
   return (
+    <UserContext.Provider value={{ userId, settingId }}>
+    <IPContext.Provider value={{IP, settingIP}}>
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Main">
+      <Stack.Navigator initialRouteName="Landing">
          <Stack.Screen
             name='Landing'
             component={Landing}
             options={{ headerShown: false }}
           />  
+          <Stack.Screen
+            name='Detail'
+            component={Detail}
+            options={{ headerShown: false }}
+          /> 
         <Stack.Screen
             name='Signup'
             component={Signup}
@@ -58,5 +71,7 @@ export default function App(){
           />
       </Stack.Navigator>
     </NavigationContainer>
+    </IPContext.Provider>
+    </UserContext.Provider>
   )
 }

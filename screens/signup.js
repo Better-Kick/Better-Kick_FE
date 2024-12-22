@@ -2,39 +2,45 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-nativ
 import Logo from '../assets/logo.svg';
 import People from '../assets/peopleIcon.svg';
 import Pawword from '../assets/passwordIcon.svg';
+import {IPContext} from '../contexts';
+import { UserContext } from '../contexts';
 
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigation } from '@react-navigation/native';
 
 
-export default function Login() {
+export default function Signup() {
     const [id, setId] = useState('');
     const [pw, setPw] = useState('');
     const [name, setName] = useState('');
     const [tel, setTel] = useState('');
     const navigation = useNavigation();
-    const goNext = ()=>{
-        if(id && pw && name && tel){
-            const postData = async ()=>{
-                try{
-                    const res = fetch('http://', {
-                        method:'POST',
-                        headers:{
-                            'Content-type':'applicatioin/json'
-                        },
-                        body:JSON.stringify({
-                            
-                        })
-                    })
-                    if(res.ok){
-                        navigation.navigate('Survay');
-                    }
-                }catch(error){
-                    console.log(error);
-                }
+    const {IP} = useContext(IPContext);
+    const {setUserId} = useContext(UserContext);
+
+    const postData = async () => {
+        try{
+            const res = await fetch(`http://${IP}/user/signup`, {
+                method:'POST',
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+                body:JSON.stringify({
+                    user_id:id,
+                    password:pw,
+                    name:name,
+                    number:tel
+                })
+            })
+            if(res.ok){
+                navigation.navigate('Survay', { userId: id });
             }
+            else{
+                console.log(res.status);
+            }
+        }catch(error){
+            console.log(error);
         }
-        else alert("입력되지않았습니다.");
     }
     return (
         <View style={styles.container}>
@@ -56,10 +62,12 @@ export default function Login() {
                 <View style={styles.inputBox}>
                     <Pawword />
                     <TextInput
+                        type={'password'}
                         style={styles.input}
                         placeholder="비밀번호"
                         onChangeText={setPw}
                         value={pw}
+                        secureTextEntry={true}
                     />
                 </View>
 
@@ -81,7 +89,7 @@ export default function Login() {
                     />
                 </View>
 
-                <TouchableOpacity style={styles.Btn} onPress={()=>goNext}>
+                <TouchableOpacity style={styles.Btn} onPress={postData}>
                     <Text style={styles.TextBtn}>다음으로</Text>
                 </TouchableOpacity>
             </View>
